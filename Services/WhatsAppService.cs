@@ -9,10 +9,6 @@ namespace WhatsAppBulkSender.Services
 {
     public class WhatsAppService 
     {
-                // Your SendZen API token (Get it from the SendZen dashboard)
-        private const string InstanceId = "instance180253"; // your instanceId
-        private const string Token = "ppooid1jse8b1xwy";//instance Token 
-
         private readonly HttpClient _httpClient;
         private readonly string _instanceId;
         private readonly string _token;
@@ -180,16 +176,16 @@ namespace WhatsAppBulkSender.Services
         {
             try
             {
-/*var url = "https://api.ultramsg.com/" + InstanceId  +  "/messages/chat";
-        var client = new RestClient(url);
-        var request = new RestRequest(url, Method.Post);    
-        request.AddHeader("content-type", "application/x-www-form-urlencoded");
-  			request.AddParameter("token", Token);
-			request.AddParameter("to", toPhoneNumber);
-			request.AddParameter("body", messageBody);
-        RestResponse response = await client.ExecuteAsync(request);
-        var output = response.Content;
-        return output;*/
+        /*var url = "https://api.ultramsg.com/" + InstanceId  +  "/messages/chat";
+         var client = new RestClient(url);
+         var request = new RestRequest(url, Method.Post);    
+         request.AddHeader("content-type", "application/x-www-form-urlencoded");
+  		 request.AddParameter("token", Token);
+		 request.AddParameter("to", toPhoneNumber);
+		 request.AddParameter("body", messageBody);
+         RestResponse response = await client.ExecuteAsync(request);
+         var output = response.Content;
+         return output;*/
 
         // Define the target endpoint for text messages
         var endpoint = $"{_instanceId}/messages/chat";
@@ -222,18 +218,18 @@ namespace WhatsAppBulkSender.Services
         {
             try
             {  
-/*            var url = "https://api.ultramsg.com/" + InstanceId  + "/messages/image";
-        var client = new RestClient(url);
-        var request = new RestRequest(url, Method.Post);    
-        request.AddHeader("content-type", "application/x-www-form-urlencoded");
-  			request.AddParameter("token", Token);
-			request.AddParameter("to", toPhoneNumber);
-			request.AddParameter("image", image);
-        RestResponse response = await client.ExecuteAsync(request);
-        var output = response.Content;
-        return output;*/
+       /*var url = "https://api.ultramsg.com/" + InstanceId  + "/messages/image";
+         var client = new RestClient(url);
+         var request = new RestRequest(url, Method.Post);    
+         request.AddHeader("content-type", "application/x-www-form-urlencoded");
+  		 request.AddParameter("token", Token);
+		 request.AddParameter("to", toPhoneNumber);
+		 request.AddParameter("image", image);
+         RestResponse response = await client.ExecuteAsync(request);
+         var output = response.Content;
+         return output;*/
 
-    // Define the target endpoint for text messages
+        // Define the target endpoint for text messages
         var endpoint = $"{_instanceId}/messages/image";
 
         // Construct parameters as standard urlencoded values
@@ -275,7 +271,7 @@ namespace WhatsAppBulkSender.Services
             var output = response.Content;
             return output;*/
 
-    // Define the target endpoint for text messages
+        // Define the target endpoint for text messages
         var endpoint = $"{_instanceId}/messages/document";
 
         // Construct parameters as standard urlencoded values
