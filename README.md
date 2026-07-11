@@ -80,7 +80,7 @@ WhatsAppBulkSender/
 │   └── MessageModels.cs        # Request/Response models
 ├── Services/
 │   ├── WhatsAppService.cs      # WhatsappWeb.Net wrapper (Singleton)
-│   ├── AntiSpamEngine.cs       # AntiSpam for perveting block phone number
+│   ├── AntiSpamEngine.cs       # AntiSpam for preventing block phone number
 │   └── WhatsAppHub.cs          # SignalR Hub for real-time updates
 ├── Views/
 │   ├── Home/
