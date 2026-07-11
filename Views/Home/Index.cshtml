@@ -1,0 +1,305 @@
+@model WhatsAppBulkSender.Models.MessageRequest
+@{
+    ViewData["Title"] = "Bulk Sender";
+    var quota = ViewBag.Quota   as WhatsAppBulkSender.Models.DailyQuota;
+}
+
+<div class="page-grid">
+
+    <!-- ── LEFT: Connection + Quota ─────────────────────────────────────── -->
+    <aside class="panel panel--connection">
+        <div class="panel-header">
+            <span class="panel-number">01</span>
+            <h2 class="panel-title">Add Numbers</h2>
+        </div>
+        <div class="panel-body">
+            <div class="quota-box">
+              <input type="text" class="form-control form-control--sm" placeholder="Receiver Name" id="receiverNameInput" />
+              <input type="number" class="form-control form-control--sm" placeholder="Phone Number ex:201001234567" id="receiverPhoneInput" />
+                <button id="btnAddPhoneNumbers" class="btn btn--primary btn--full">Add to Phone Numbers List</button>
+                <button id="btnClearPhoneNumbers" class="btn btn--danger btn--full">Clear Phone Numbers List</button>
+            </div>
+
+            <div class="connection-info">
+                <h4>How it works</h4>
+                <ol>
+                <li>Enter phone numbers</li>
+                    <li>Click <strong>Add to Phone Numbers List</strong></li>
+                    <li>Fill in message</li>
+                    <li>Hit <strong>Send Messages</strong></li>
+                </ol>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── RIGHT: Compose + Anti-Spam settings ───────────────────────────── -->
+    <section class="panel panel--send">
+        <div class="panel-header">
+            <span class="panel-number">02</span>
+            <h2 class="panel-title">Compose &amp; Send</h2>
+        </div>
+        <div class="panel-body">
+            <form asp-action="Send" method="post" enctype="multipart/form-data" id="sendForm">
+                @Html.AntiForgeryToken()
+
+                <!-- Phone numbers -->
+                <div class="form-group">
+                    <label asp-for="PhoneNumbers" class="form-label">
+                        Phone Numbers List
+                    </label>
+                    <textarea asp-for="PhoneNumbers"
+                              class="form-control form-control--tall"
+                              rows="6" id="phoneNumbersTextarea" readonly></textarea>
+                    <span asp-validation-for="PhoneNumbers" class="field-error"></span>
+                    <div class="phone-counter"><span id="phoneCount">0</span> numbers detected</div>
+                </div>
+
+                <!-- Message with spinner syntax help -->
+                <div class="form-group">
+                    <label asp-for="Message" class="form-label">
+                        Message
+                        <span class="label-hint" id="charCount">0 / 4096</span>
+                    </label>
+                    <textarea asp-for="Message"
+                              class="form-control form-control--message"
+                              placeholder="{Hello|Hi|Hey} {name}, your offer is ready! Reply STOP to unsubscribe."
+                              rows="5" maxlength="4096"></textarea>
+                    <span asp-validation-for="Message" class="field-error"></span>
+                </div>
+
+                <!-- ════════════════════════════════════════════════════════
+                     ANTI-SPAM SETTINGS ACCORDION
+                     ════════════════════════════════════════════════════════ -->
+                <details class="antispam-accordion" open>
+                    <summary class="antispam-summary">
+                        <span class="as-icon">🛡</span>
+                        Anti-Spam Protection Settings
+                        <span class="as-badge">5 active</span>
+                        <span class="as-chevron">▾</span>
+                    </summary>
+
+                    <div class="antispam-body">
+
+
+                            <!-- Card 1: Smart delay -->
+                            <div class="as-card">
+                                <div class="as-card-head">
+                                    <span class="as-card-icon">⏱</span>
+                                    <div>
+                                        <div class="as-card-title">Random Delay</div>
+                                        <div class="as-card-sub">Human-like pause between sends</div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group--half">
+                                        <label asp-for="DelayMinSeconds" class="form-label-sm">Min (sec)</label>
+                                        <input asp-for="DelayMinSeconds" type="number" class="form-control form-control--sm" min="3" max="120" />
+                                        <span asp-validation-for="DelayMinSeconds" class="field-error"></span>
+                                    </div>
+                                    <div class="form-group form-group--half">
+                                        <label asp-for="DelayMaxSeconds" class="form-label-sm">Max (sec)</label>
+                                        <input asp-for="DelayMaxSeconds" type="number" class="form-control form-control--sm" min="3" max="180" />
+                                        <span asp-validation-for="DelayMaxSeconds" class="field-error"></span>
+                                    </div>
+                                </div>
+                                <p class="as-tip">Each gap is random within this range + ±10% jitter. Avoids robotic fixed-interval detection.</p>
+                            </div>
+
+                            <!-- Card 2: Batch cooling -->
+                            <div class="as-card">
+                                <div class="as-card-head">
+                                    <span class="as-card-icon">❄️</span>
+                                    <div>
+                                        <div class="as-card-title">Batch Cooling</div>
+                                        <div class="as-card-sub">Pause every N messages</div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group--half">
+                                        <label asp-for="BatchSize" class="form-label-sm">Batch size</label>
+                                        <input asp-for="BatchSize" type="number" class="form-control form-control--sm" min="5" max="100" />
+                                        <span asp-validation-for="BatchSize" class="field-error"></span>
+                                    </div>
+                                    <div class="form-group form-group--half">
+                                        <label asp-for="CoolingPauseSeconds" class="form-label-sm">Pause (sec)</label>
+                                        <input asp-for="CoolingPauseSeconds" type="number" class="form-control form-control--sm" min="30" max="600" />
+                                        <span asp-validation-for="CoolingPauseSeconds" class="field-error"></span>
+                                    </div>
+                                </div>
+                                <p class="as-tip">After every <em>batch size</em> messages, the sender cools down. Mimics a human taking a break.</p>
+                            </div>
+
+                            <!-- Card 3: Message spinning -->
+                            <div class="as-card">
+                                <div class="as-card-head">
+                                    <span class="as-card-icon">🔀</span>
+                                    <div>
+                                        <div class="as-card-title">Message Spinning</div>
+                                        <div class="as-card-sub">Unique variation per recipient</div>
+                                    </div>
+                                </div>
+                                <div class="toggle-row">
+                                    <label class="toggle-label" for="EnableSpinning">
+                                        Enable spinning <code>{A|B|C}</code>
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input asp-for="EnableSpinning" type="checkbox" id="EnableSpinning" checked />
+                                        <span class="toggle-thumb"></span>
+                                    </label>
+                                </div>
+                                <p class="as-tip">Each message gets a random variation from <code>{Hello|Hi|Hey}</code> groups + an invisible Unicode suffix, making every message byte-unique. Bypasses duplicate-content hashing.</p>
+                            </div>
+
+                            <!-- Card 4: Daily limit -->
+                            <div class="as-card">
+                                <div class="as-card-head">
+                                    <span class="as-card-icon">📊</span>
+                                    <div>
+                                        <div class="as-card-title">Daily Send Limit</div>
+                                        <div class="as-card-sub">Hard cap to protect your account</div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="DailyLimit" class="form-label-sm">Max messages / day</label>
+                                    <input asp-for="DailyLimit" type="number" class="form-control form-control--sm" min="1" max="500" id="dailyLimitInput" />
+                                    <span asp-validation-for="DailyLimit" class="field-error"></span>
+                                </div>
+                                <p class="as-tip">WhatsApp may flag accounts that send hundreds of messages per day. Keep under 200 for new numbers, 300 for established ones.</p>
+                            </div>
+
+                       
+                    </div>
+                </details>
+
+                <!-- Attachment -->
+                <div class="form-group" style="margin-top:1.25rem">
+                    <label asp-for="Attachment" class="form-label">
+                        Attachment
+                        <span class="label-hint">image, pdf, doc, video (optional)</span>
+                    </label>
+                    <div class="file-input-wrap">
+                        <input asp-for="Attachment" type="file" class="file-input" id="attachmentInput"
+                               accept="image/*,.pdf,.doc,.docx,.mp4,.mp3" />
+                        <label for="attachmentInput" class="file-label">
+                            <span id="fileNameDisplay">Choose file…</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Live progress -->
+                <div id="progressArea" class="progress-area" style="display:none">
+                    <div class="progress-header">
+                        <span id="progressLabel">Sending messages…</span>
+                        <span id="progressText">0 / 0</span>
+                    </div>
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar" id="progressBar" style="width:0%"></div>
+                    </div>
+                    <div id="batchAlert" class="batch-alert" style="display:none">
+                        ❄️ Batch cooling pause in progress…
+                    </div>
+                    <div id="liveLog" class="live-log"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn--send">
+                        <span class="btn-icon">⚡</span> Send to All Numbers
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+</div>
+
+@section Scripts {
+<script>
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/whatsappHub").withAutomaticReconnect().build();
+
+const btnSend = document.getElementById("btnSend");
+
+
+connection.on("BatchPause", data => {
+    const el = document.getElementById("batchAlert");
+    el.style.display  = "block";
+    el.textContent    = `❄️ Batch cooling — ${data.sentSoFar} sent. Pausing ${data.pauseSec}s…`;
+    setTimeout(() => { el.style.display = "none"; }, data.pauseSec * 1000);
+});
+
+let totalNumbers = 0, sentCount = 0;
+
+connection.on("MessageStatus", r => {
+    sentCount++;
+    const pct = totalNumbers > 0 ? (sentCount / totalNumbers * 100) : 0;
+    document.getElementById("progressBar").style.width  = pct + "%";
+    document.getElementById("progressText").textContent = sentCount + " / " + totalNumbers;
+
+    // Update quota bar
+    const limit = parseInt(document.getElementById("dailyLimitInput")?.value || "150", 10);
+    const qPct  = Math.min(100, Math.round(r.sentToday / limit * 100));
+    const qBar  = document.getElementById("quotaBar");
+    if (qBar) {
+        qBar.style.width = qPct + "%";
+        qBar.className   = "quota-bar" + (qPct >= 80 ? " quota-bar--danger" : qPct >= 50 ? " quota-bar--warn" : "");
+    }
+    document.getElementById("quotaCount").textContent = r.sentToday + " / " + limit;
+
+    const line = document.createElement("div");
+    line.className = "log-line log-line--" + (r.success ? "ok" : "err");
+    const label = r.displayName ? `${r.displayName} (${r.phoneNumber})` : r.phoneNumber;
+    line.innerHTML = `<span class="log-phone">${label}</span>
+                      <span class="log-status">${r.success ? "✓" : "✗"} ${r.statusMessage}</span>`;
+    document.getElementById("liveLog").prepend(line);
+});
+
+connection.start().catch(e => console.error(e));
+
+
+document.getElementById("btnAddPhoneNumbers")?.addEventListener("click", async () => {
+
+const receiverName = document.getElementById("receiverNameInput");
+const receiverPhone = document.getElementById("receiverPhoneInput");
+    document.getElementById("phoneNumbersTextarea").textContent+= receiverName.value+"|"+receiverPhone.value+"\n";
+    countPhones();
+});
+
+document.getElementById("btnClearPhoneNumbers")?.addEventListener("click", async () => {
+    document.getElementById("phoneNumbersTextarea").textContent = "";
+});
+
+// Counters
+const phoneTA = document.getElementById("phoneNumbersTextarea");
+const charTA  = document.getElementById("Message");
+
+function countPhones() {
+    const nums = (phoneTA?.value||"").split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean);
+    document.getElementById("phoneCount").textContent = nums.length;
+    totalNumbers = nums.length;
+}
+function countChars() {
+    document.getElementById("charCount").textContent = (charTA?.value?.length||0) + " / 4096";
+}
+phoneTA?.addEventListener("input", countPhones);
+charTA?.addEventListener("input", countChars);
+countChars();
+
+// File name
+document.getElementById("attachmentInput")?.addEventListener("change", function() {
+    document.getElementById("fileNameDisplay").textContent =
+        this.files.length ? this.files[0].name : "Choose file…";
+});
+
+// Show progress on submit
+document.getElementById("sendForm")?.addEventListener("submit", () => {
+    document.getElementById("progressArea").style.display = "block";
+    countPhones();
+    sentCount = 0;
+    document.getElementById("progressBar").style.width  = "0%";
+    document.getElementById("liveLog").innerHTML = "";
+    if (btnSend) { btnSend.disabled = true; btnSend.textContent = "Sending…"; }
+});
+
+</script>
+}

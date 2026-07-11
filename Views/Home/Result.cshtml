@@ -1,0 +1,82 @@
+@model WhatsAppBulkSender.Models.BulkSendResult
+@{
+    ViewData["Title"] = "Send Results";
+}
+
+<div class="results-page">
+    <div class="results-header">
+        <h1 class="results-title">Send Complete</h1>
+        <p class="results-summary">@Model.SummaryMessage</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat stat--green">
+            <span class="stat-num">@Model.TotalSent</span>
+            <span class="stat-label">Sent</span>
+        </div>
+        <div class="stat stat--red">
+            <span class="stat-num">@Model.TotalFailed</span>
+            <span class="stat-label">Failed</span>
+        </div>
+        <div class="stat stat--grey">
+            <span class="stat-num">@Model.TotalNumbers</span>
+            <span class="stat-label">Total</span>
+        </div>
+    </div>
+
+    <div class="results-table-wrap">
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Phone Number</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Sent At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Results.Count; i++)
+                {
+                    var r = Model.Results[i];
+                    <tr class="@(r.Success ? "row--ok" : "row--err")">
+                        <td>@(i + 1)</td>
+                        <td class="cell-phone">@r.PhoneNumber</td>
+                        <td>
+                            <span class="status-pill @(r.Success ? "pill--green" : "pill--red")">
+                                @(r.Success ? "✓ Sent" : "✗ Failed")
+                            </span>
+                        </td>
+                        <td class="cell-msg">@r.StatusMessage</td>
+                        <td class="cell-time">@r.SentAt.ToString("HH:mm:ss")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="results-actions">
+        <a href="/" class="btn btn--primary">← Send More Messages</a>
+        <button onclick="exportCSV()" class="btn btn--outline">⬇ Export CSV</button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function exportCSV() {
+    const rows = [["#","Phone","Success","Message","SentAt"]];
+    @for (int i = 0; i < Model.Results.Count; i++)
+    {
+        var r = Model.Results[i];
+        <text>rows.push([@(i+1), "@r.PhoneNumber", "@r.Success", "@r.StatusMessage.Replace("\"","'")","@r.SentAt.ToString("yyyy-MM-dd HH:mm:ss")"]);
+        </text>
+    }
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+    const blob = new Blob([csv], {type:"text/csv"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "whatsapp_results.csv";
+    a.click();
+}
+</script>
+}

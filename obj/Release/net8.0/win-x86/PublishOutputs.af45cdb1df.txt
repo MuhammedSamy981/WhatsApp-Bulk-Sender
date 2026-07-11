@@ -1,0 +1,9 @@
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\WhatsAppBulkSender.exe
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\appsettings.json
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\WhatsAppBulkSender.dll
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\WhatsAppBulkSender.deps.json
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\WhatsAppBulkSender.runtimeconfig.json
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\WhatsAppBulkSender.pdb
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\Newtonsoft.Json.dll
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\RestSharp.dll
+E:\New folder (3)\Full Stack Web Development\WhatsAppBulkSender\bin\Release\net8.0\win-x86\publish\System.Net.WebSockets.WebSocketProtocol.dll

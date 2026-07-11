@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="site73969" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^E:\\New\ folder\ \(3\)\\Full\ Stack\ Web\ Development\\WhatsAppBulkSender\\bin\\Release\\net8\.0\\win-x86\\publish\\$" />
+  </parameter>
+</parameters>
